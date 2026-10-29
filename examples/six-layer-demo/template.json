@@ -1,0 +1,223 @@
+{
+  "name": "離線六層測試人偶（非 AI 成果）",
+  "views": [
+    {
+      "direction": "front",
+      "layers": [
+        {
+          "part": "left_leg",
+          "asset_path": "layers/front/left_leg.png",
+          "joint": [
+            113,
+            178
+          ]
+        },
+        {
+          "part": "right_leg",
+          "asset_path": "layers/front/right_leg.png",
+          "joint": [
+            143,
+            178
+          ]
+        },
+        {
+          "part": "left_arm",
+          "asset_path": "layers/front/left_arm.png",
+          "joint": [
+            93,
+            110
+          ]
+        },
+        {
+          "part": "body",
+          "asset_path": "layers/front/body.png",
+          "joint": [
+            128,
+            140
+          ]
+        },
+        {
+          "part": "head",
+          "asset_path": "layers/front/head.png",
+          "joint": [
+            128,
+            78
+          ]
+        },
+        {
+          "part": "right_arm",
+          "asset_path": "layers/front/right_arm.png",
+          "joint": [
+            163,
+            110
+          ]
+        }
+      ]
+    },
+    {
+      "direction": "left",
+      "layers": [
+        {
+          "part": "left_arm",
+          "asset_path": "layers/left/left_arm.png",
+          "joint": [
+            93,
+            110
+          ]
+        },
+        {
+          "part": "left_leg",
+          "asset_path": "layers/left/left_leg.png",
+          "joint": [
+            113,
+            178
+          ]
+        },
+        {
+          "part": "body",
+          "asset_path": "layers/left/body.png",
+          "joint": [
+            128,
+            140
+          ]
+        },
+        {
+          "part": "head",
+          "asset_path": "layers/left/head.png",
+          "joint": [
+            128,
+            78
+          ]
+        },
+        {
+          "part": "right_leg",
+          "asset_path": "layers/left/right_leg.png",
+          "joint": [
+            143,
+            178
+          ]
+        },
+        {
+          "part": "right_arm",
+          "asset_path": "layers/left/right_arm.png",
+          "joint": [
+            163,
+            110
+          ]
+        }
+      ]
+    },
+    {
+      "direction": "right",
+      "layers": [
+        {
+          "part": "right_arm",
+          "asset_path": "layers/right/right_arm.png",
+          "joint": [
+            163,
+            110
+          ]
+        },
+        {
+          "part": "right_leg",
+          "asset_path": "layers/right/right_leg.png",
+          "joint": [
+            143,
+            178
+          ]
+        },
+        {
+          "part": "body",
+          "asset_path": "layers/right/body.png",
+          "joint": [
+            128,
+            140
+          ]
+        },
+        {
+          "part": "head",
+          "asset_path": "layers/right/head.png",
+          "joint": [
+            128,
+            78
+          ]
+        },
+        {
+          "part": "left_leg",
+          "asset_path": "layers/right/left_leg.png",
+          "joint": [
+            113,
+            178
+          ]
+        },
+        {
+          "part": "left_arm",
+          "asset_path": "layers/right/left_arm.png",
+          "joint": [
+            93,
+            110
+          ]
+        }
+      ]
+    },
+    {
+      "direction": "back",
+      "layers": [
+        {
+          "part": "left_leg",
+          "asset_path": "layers/back/left_leg.png",
+          "joint": [
+            113,
+            178
+          ]
+        },
+        {
+          "part": "right_leg",
+          "asset_path": "layers/back/right_leg.png",
+          "joint": [
+            143,
+            178
+          ]
+        },
+        {
+          "part": "left_arm",
+          "asset_path": "layers/back/left_arm.png",
+          "joint": [
+            93,
+            110
+          ]
+        },
+        {
+          "part": "right_arm",
+          "asset_path": "layers/back/right_arm.png",
+          "joint": [
+            163,
+            110
+          ]
+        },
+        {
+          "part": "body",
+          "asset_path": "layers/back/body.png",
+          "joint": [
+            128,
+            140
+          ]
+        },
+        {
+          "part": "head",
+          "asset_path": "layers/back/head.png",
+          "joint": [
+            128,
+            78
+          ]
+        }
+      ]
+    }
+  ],
+  "parameters": {
+    "arm_swing": 12,
+    "leg_swing": 10,
+    "bob": 2
+  },
+  "template_version": 1
+}

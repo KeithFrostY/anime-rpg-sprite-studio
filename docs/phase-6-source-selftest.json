@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "frozen": false,
+  "checks": [
+    "Qt main window and Unicode project save",
+    "shipped 24-layer PNG template loaded",
+    "CPU generation, 16-frame apply, save and reopen",
+    "timed four-frame playback, onion skin and baseline",
+    "background 16-frame quality analysis",
+    "PNG/sheet/JSON export and full output validation",
+    "offline Mock, Windows backend import, fake-vault interface, SQLite and HTTPS module"
+  ],
+  "network": "blocked",
+  "real_vault": "blocked",
+  "stage": "export"
+}

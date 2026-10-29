@@ -1,0 +1,13 @@
+from typing import Protocol
+
+
+class CredentialManager(Protocol):
+    """Phase 5: keyring Windows backend only; fail closed, never plaintext fallback.
+
+    Secrets must never enter project JSON, logs or UI responses. Retrieval is
+    adapter-only and bound to the specified provider's HTTPS host allowlist.
+    """
+    def set_key(self, provider_id: str, secret: str) -> None: ...
+    def has_key(self, provider_id: str) -> bool: ...
+    def delete_key(self, provider_id: str) -> None: ...
+    def get_key_for_provider(self, provider_id: str) -> str: ...
