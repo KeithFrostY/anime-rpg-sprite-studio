@@ -44,6 +44,7 @@ class MainWindow(QMainWindow):
         self.export_action = menu.addAction("匯出 PNG／Sprite Sheet／JSON…")
         self.export_action.setEnabled(False)
         self.export_action.triggered.connect(self.open_export_dialog)
+        menu.addAction("單方向圖片切割／動畫…", self.open_single_direction)
         settings = self.menuBar().addMenu("設定")
         settings.addAction("fal.ai Key 設定", self.key_settings)
         settings.addAction("AI 候選／預算與請求紀錄", self.open_ai_dialog)
@@ -148,6 +149,10 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.slots_label)
         self.statusBar().showMessage("離線就緒 · AI 預設 Mock · fal.ai 每次付費前需確認")
         self.refresh()
+
+    def open_single_direction(self):
+        from .single_direction_dialog import SingleDirectionDialog
+        SingleDirectionDialog(self).exec()
 
     def active_character(self):
         return next((c for c in self.service.project.characters if c.id == self.service.project.active_character_id), None)
