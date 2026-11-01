@@ -1,6 +1,8 @@
 from pathlib import Path
 from copy import deepcopy
 from uuid import uuid4
+from io import BytesIO
+from PIL import Image, UnidentifiedImageError
 from .models import Project, Character, SpriteFrame, Direction, utc_now, asset_references
 from .assets import write_asset
 from .project_repository import ProjectRepository
@@ -32,14 +34,21 @@ class ProjectService:
         candidate.updated_at = utc_now()
         try:
             if self.path and self.path.parent.resolve() != path.parent:
-                for ref in asset_references(candidate):
-                    source = self.repository._asset(self.path.parent, ref.asset_path)
+                refs = list(asset_references(candidate))
+                originals = [ref.asset_path for ref in refs]
+                paths = {}
+                for original in originals:
+                    if original in paths:
+                        continue
+                    source = self.repository._asset(self.path.parent, original)
                     data = source.read_bytes()  # Missing source fails before JSON replacement.
                     relative = f"assets/{uuid4().hex}.png"
                     target = self.repository._asset(path.parent, relative)
                     write_asset(target, data)
                     created.append(target)
-                    ref.asset_path = relative
+                    paths[original] = relative
+                for ref, original in zip(refs, originals):
+                    ref.asset_path = paths[original]
             self.repository.save(candidate, path)
         except Exception:
             for target in created:
@@ -125,3 +134,51 @@ class ProjectService:
         self.project = project
         self.path = Path(path)
         self.dirty = False
+
+    def apply_ab_walk(self, character_id, rig, assets):
+        """Validate and stage a candidate before replacing its A/B rig."""
+        if self.path is None:
+            raise ValueError('請先儲存專案')
+        candidate = deepcopy(rig)
+        candidate.validate()
+        character = next(c for c in self.project.characters if c.id == character_id)
+        refs = [(candidate.source, 'original')]
+        for layer in candidate.layers:
+            refs.append((layer, 'layer'))
+            if layer.edit is not None:
+                refs.extend(((layer.edit.source, 'edit_source'), (layer.edit.mask, 'mask'), (layer.edit.paint, 'paint')))
+        for ref, role in refs:
+            data = assets.get(ref.asset_path)
+            if not isinstance(data, bytes) or len(data) > 32 * 1024 * 1024:
+                raise ValueError('缺少素材或圖片檔案過大')
+            try:
+                with Image.open(BytesIO(data)) as image:
+                    if image.format != 'PNG' or image.width * image.height > 32_000_000 or getattr(image, 'n_frames', 1) != 1:
+                        raise ValueError('素材必須是單張 PNG')
+                    if role != 'original' and image.size != tuple(candidate.canvas):
+                        raise ValueError('素材必須與畫布尺寸一致')
+                    if role in ('layer', 'paint') and ('A' not in image.getbands() and 'transparency' not in image.info):
+                        raise ValueError('分件必須是同畫布尺寸的透明 PNG')
+                    if role == 'mask' and image.mode != 'L':
+                        raise ValueError('遮罩必須是灰階 PNG')
+                    image.load()
+            except (OSError, UnidentifiedImageError, Image.DecompressionBombError) as exc:
+                raise ValueError('無法讀取 PNG 素材') from exc
+        created = []
+        try:
+            paths = {}
+            originals = [ref.asset_path for ref, role in refs]
+            for original in originals:
+                if original not in paths:
+                    relative = f'assets/{uuid4().hex}.png'
+                    target = self.repository._asset(self.path.parent, relative)
+                    write_asset(target, assets[original]); created.append(target)
+                    paths[original] = relative
+            for (ref, role), original in zip(refs, originals):
+                ref.asset_path = paths[original]
+            candidate.validate()
+        except Exception:
+            for target in created: target.unlink(missing_ok=True)
+            raise
+        character.ab_walk = candidate
+        self.dirty = True
