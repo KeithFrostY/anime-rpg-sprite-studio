@@ -44,6 +44,7 @@ class MainWindow(QMainWindow):
         self.export_action = menu.addAction("匯出 PNG／Sprite Sheet／JSON…")
         self.export_action.setEnabled(False)
         self.export_action.triggered.connect(self.open_export_dialog)
+        menu.addAction('A／B 多角色批量輸出…', self.open_ab_batch)
         menu.addAction("單方向圖片切割／動畫…", self.open_single_direction)
         settings = self.menuBar().addMenu("設定")
         settings.addAction("fal.ai Key 設定", self.key_settings)
@@ -135,6 +136,9 @@ class MainWindow(QMainWindow):
         self.template_button = QPushButton("分層模板／生成 Walk")
         self.template_button.clicked.connect(self.open_template_dialog)
         controls.addWidget(self.template_button)
+        self.ab_button = QPushButton('A／B 單角色 Walk')
+        self.ab_button.clicked.connect(self.open_ab_dialog)
+        controls.addWidget(self.ab_button)
         layout.addLayout(controls)
         slots = QHBoxLayout()
         self.slot_buttons = []
@@ -376,6 +380,30 @@ class MainWindow(QMainWindow):
         dialog = TemplateDialog(self.service, self.active_character().id, self)
         dialog.exec()
         self.refresh()
+        dialog.deleteLater()
+
+    def open_ab_dialog(self):
+        from .ab_dialog import ABDialog
+        if self._import_busy or self.active_character() is None:
+            return
+        if self.service.path is None and not self.save_project():
+            return
+        self.stop_playback()
+        self._epoch += 1
+        dialog = ABDialog(self.service, self.active_character().id, self)
+        dialog.exec()
+        self.refresh()
+        dialog.deleteLater()
+
+    def open_ab_batch(self):
+        from .ab_batch_dialog import ABBatchDialog
+        if self._import_busy or not self.service.project.characters:
+            return
+        if self.service.path is None and not self.save_project():
+            return
+        self.stop_playback()
+        dialog = ABBatchDialog(self.service, self)
+        dialog.exec()
         dialog.deleteLater()
 
     def show_mock(self):

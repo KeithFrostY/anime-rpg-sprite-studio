@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .rig import CharacterTemplate
+    from .ab_rig import ABWalk
 
 
 def new_id() -> str:
@@ -92,20 +93,21 @@ class Character:
     style_profile: str = "日系動漫 RPG / 3–4 頭身 / 2D 斜俯視"
     clips: list[AnimationClip] = field(default_factory=lambda: [AnimationClip()])
     template: CharacterTemplate | None = None
+    ab_walk: ABWalk | None = None
 
 
 @dataclass
 class Project:
     name: str = "未命名專案"
     id: str = field(default_factory=new_id)
-    schema_version: int = 2
+    schema_version: int = 6
     characters: list[Character] = field(default_factory=list)
     active_character_id: str | None = None
     created_at: datetime = field(default_factory=utc_now)
     updated_at: datetime = field(default_factory=utc_now)
 
     def validate(self) -> None:
-        if type(self.schema_version) is not int or self.schema_version != 2:
+        if type(self.schema_version) is not int or self.schema_version != 6:
             raise ValueError("Unsupported schema version")
         if not isinstance(self.name, str) or not self.name.strip():
             raise ValueError("Project name is required")
@@ -125,6 +127,10 @@ class Project:
                     raise ValueError("Invalid animation frames")
             if c.template is not None:
                 c.template.validate()
+            if c.ab_walk is not None:
+                from .ab_rig import ABWalk
+                if not isinstance(c.ab_walk, ABWalk): raise ValueError('Invalid A/B rig')
+                c.ab_walk.validate()
 
 
 def asset_references(project: Project):
@@ -135,3 +141,11 @@ def asset_references(project: Project):
         if character.template is not None:
             for view in character.template.views:
                 yield from view.layers
+        if character.ab_walk is not None:
+            yield character.ab_walk.source
+            for layer in character.ab_walk.layers:
+                yield layer
+                if layer.edit is not None:
+                    yield layer.edit.source
+                    yield layer.edit.mask
+                    yield layer.edit.paint
